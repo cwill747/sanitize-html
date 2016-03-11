@@ -473,4 +473,16 @@ describe('sanitizeHtml', function() {
       "<Archer><Sterling>I am</Sterling></Archer>"
     );
   });
+  it('should rewrite document IDs and targets', function() {
+    assert.equal(
+      sanitizeHtml('<a id="id1" name="id1">Linked content</a><a href="#id1">Link to a</a>', {
+        allowedTags: false,
+        allowedAttributes: false,
+        rewriteIDs: function(id) {
+          return "prefix-" + id;
+        }
+      }),
+      '<a id="prefix-id1" name="id1">Linked content</a><a href="#prefix-id1">Link to a</a>'
+    );
+  })
 });
