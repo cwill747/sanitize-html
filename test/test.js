@@ -505,15 +505,21 @@ describe('sanitizeHtml', function() {
     );
   });
   it('should rewrite document IDs and targets', function() {
+    var config = {
+      allowedTags: false,
+      allowedAttributes: false,
+      transformIDs: {
+        prefix: 'prefix'
+      }
+    };
     assert.equal(
-      sanitizeHtml('<a id="id1" name="id1">Linked content</a><a href="#id1">Link to a</a>', {
-        allowedTags: false,
-        allowedAttributes: false,
-        rewriteIDs: function(id) {
-          return "prefix-" + id;
-        }
-      }),
+      sanitizeHtml('<a id="id1" name="id1">Linked content</a><a href="#id1">Link to a</a>', config),
       '<a id="prefix-id1" name="id1">Linked content</a><a href="#prefix-id1">Link to a</a>'
     );
+
+    assert.equal(
+      sanitizeHtml(sanitizeHtml('<a id="id1" name="id1">Linked content</a><a href="#id1">Link to a</a>', config), config),
+      '<a id="prefix-id1" name="id1">Linked content</a><a href="#prefix-id1">Link to a</a>'
+    )
   });
 });
