@@ -164,8 +164,8 @@ function sanitizeHtml(html, options, _recursing) {
                 delete frame.attribs[a];
                 return;
               }
-              if (a === 'href' && value.length && value.charAt(0) === "#" && options.rewriteIDs && typeof options.rewriteIDs === "function") {
-                value = "#" + options.rewriteIDs(value.substr(1).trim());
+              if (a === 'href') {
+                value = transformID(value);
               }
             }
             if (a === 'class') {
@@ -176,9 +176,7 @@ function sanitizeHtml(html, options, _recursing) {
               }
             }
             if (a === 'id') {
-              if(options.rewriteIDs && typeof options.rewriteIDs === "function") {
-                value = options.rewriteIDs(value);
-              }
+              value = transformID(value);
             }
             result += ' ' + a;
             if (value.length) {
@@ -312,6 +310,21 @@ function sanitizeHtml(html, options, _recursing) {
     return classes.filter(function(clss) {
       return allowed.indexOf(clss) !== -1;
     }).join(' ');
+  }
+
+  function transformID(id) {
+    if(options.transformIDs && id && id.length > 0) {
+      if(options.transformIDs.prefix) {
+        if(id.indexOf(options.transformIDs.prefix) === -1) {
+          if(id.charAt(0) === "#") {
+            id = "#" + options.transformIDs.prefix + "-" + id.substr(1);
+          } else {
+            id = options.transformIDs.prefix + "-" + id;
+          }
+        }
+      }
+    }
+    return id;
   }
 }
 
