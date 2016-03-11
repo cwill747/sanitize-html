@@ -165,12 +165,20 @@ function sanitizeHtml(html, options, _recursing) {
                 delete frame.attribs[a];
                 return;
               }
+              if (a === 'href' && value.length && value.charAt(0) === "#" && options.rewriteIDs && typeof options.rewriteIDs === "function") {
+                value = "#" + options.rewriteIDs(value.substr(1).trim());
+              }
             }
             if (a === 'class') {
               value = filterClasses(value, allowedClassesMap[name]);
               if (!value.length) {
                 delete frame.attribs[a];
                 return;
+              }
+            }
+            if (a === 'id') {
+              if(options.rewriteIDs && typeof options.rewriteIDs === "function") {
+                value = options.rewriteIDs(value);
               }
             }
             if (a === 'style') {
